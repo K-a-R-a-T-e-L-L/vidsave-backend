@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist-bootstrap",
+    "declaration": false,
+    "incremental": false,
+    "sourceMap": false
+  },
+  "include": ["src/**/*.ts", "scripts/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-bootstrap",
+    "coverage",
+    "test",
+    "**/*.spec.ts"
+  ]
+}

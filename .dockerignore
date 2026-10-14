@@ -1,0 +1,17 @@
+node_modules/
+var/
+dist/
+dist-bootstrap/
+coverage/
+test/
+.env
+.env.*
+!.env.example
+.git/
+.codex/
+*.zip
+*.log
+AGENTS.md
+PROJECT_STATE.md
+README.md
+*.tsbuildinfo

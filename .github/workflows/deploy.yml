@@ -1,0 +1,102 @@
+name: CI and Deploy
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: vidsave_ci
+          POSTGRES_PASSWORD: isolated-ci-only
+          POSTGRES_DB: vidsave_ci
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U vidsave_ci -d vidsave_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --no-audit --progress=false
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run build
+      - run: npm run typecheck
+      - run: npm test
+      - name: Integration tests against disposable PostgreSQL
+        run: npm run test:e2e
+        env:
+          VIDSAVE_AUTH_TEST_DATABASE: "1"
+          VIDSAVE_AUTH_TEST_DB_HOST: 127.0.0.1
+          VIDSAVE_AUTH_TEST_DB_PORT: "5433"
+          VIDSAVE_AUTH_TEST_DB_USER: vidsave_ci
+          VIDSAVE_AUTH_TEST_DB_PASSWORD: isolated-ci-only
+          VIDSAVE_AUTH_TEST_DB_NAME: vidsave_ci
+      - name: Validate container build
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  publish-and-deploy:
+    needs: checks
+    if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Check deploy secret
+        env:
+          DOKPLOY_DEPLOY_WEBHOOK: ${{ secrets.DOKPLOY_DEPLOY_WEBHOOK }}
+        run: test -n "$DOKPLOY_DEPLOY_WEBHOOK" || { echo 'Missing production secret DOKPLOY_DEPLOY_WEBHOOK'; exit 1; }
+      - name: Image name
+        id: image
+        env:
+          OWNER: ${{ github.repository_owner }}
+        run: echo "name=ghcr.io/${OWNER,,}/vidsave-backend" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:latest
+            ${{ steps.image.outputs.name }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+      - name: Request Dokploy deployment
+        env:
+          DOKPLOY_DEPLOY_WEBHOOK: ${{ secrets.DOKPLOY_DEPLOY_WEBHOOK }}
+        run: node .github/scripts/deploy.mjs
