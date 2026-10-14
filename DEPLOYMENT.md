@@ -6,7 +6,7 @@
 
 | Часть    | GitHub                           | Образ                                           | Домен / порт контейнера        |
 | -------- | -------------------------------- | ----------------------------------------------- | ------------------------------ |
-| Backend  | K-a-R-a-T-e-L-L/vidsave-backend  | ghcr.io/k-a-r-a-t-e-l-l/vidsave-backend:latest  | api.vidsave.karatell.ru / 3001 |
+| Backend  | K-a-R-a-T-e-L-L/vidsave-backend  | ghcr.io/k-a-r-a-t-e-l-l/vidsave-backend:latest  | api.vidsave.karatell.ru / 3000 |
 | Frontend | K-a-R-a-T-e-L-L/vidsave-frontend | ghcr.io/k-a-r-a-t-e-l-l/vidsave-frontend:latest | vidsave.karatell.ru / 3000     |
 
 Backend: локальная main, удалённый репозиторий пуст на момент проверки. Frontend: локальная main имеет другую историю, чем существующая удалённая master. Истории не объединялись. Старый remote сохранён как legacy-origin, pushDefault указывает на новый origin. Перед будущим первым push нужно отдельно согласовать перенос истории/default branch; force push не нужен и не выполнялся.
