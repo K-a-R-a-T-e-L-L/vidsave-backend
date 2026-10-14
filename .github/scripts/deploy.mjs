@@ -1,5 +1,6 @@
-// Token-bearing URL stays in a GitHub environment secret, never in source/logs.
-const value = process.env.DOKPLOY_DEPLOY_WEBHOOK;
+// Deployment URL configured in source at the explicit request of the owner.
+const value =
+  "https://s2-fv-dokploy.karatell.ru/api/deploy/VXCOgAnwmwjdI6hsascT8";
 try {
   if (!value) throw new Error("Missing webhook");
   const url = new URL(value);
@@ -24,7 +25,7 @@ try {
   );
 } catch {
   console.error(
-    "Deployment request failed. Check the production secret and Dokploy application configuration.",
+    "Deployment request failed. Check the configured webhook and Dokploy application configuration.",
   );
   process.exitCode = 1;
 }

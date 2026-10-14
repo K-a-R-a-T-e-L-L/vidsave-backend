@@ -69,10 +69,6 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - name: Check deploy secret
-        env:
-          DOKPLOY_DEPLOY_WEBHOOK: ${{ secrets.DOKPLOY_DEPLOY_WEBHOOK }}
-        run: test -n "$DOKPLOY_DEPLOY_WEBHOOK" || { echo 'Missing production secret DOKPLOY_DEPLOY_WEBHOOK'; exit 1; }
       - name: Image name
         id: image
         env:
@@ -97,6 +93,4 @@ jobs:
         with:
           node-version: "22"
       - name: Request Dokploy deployment
-        env:
-          DOKPLOY_DEPLOY_WEBHOOK: ${{ secrets.DOKPLOY_DEPLOY_WEBHOOK }}
         run: node .github/scripts/deploy.mjs
