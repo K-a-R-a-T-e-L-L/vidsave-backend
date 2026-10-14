@@ -13,6 +13,7 @@ import { Lead, NotificationOutbox, SiteSettings } from "./cms.entities";
 import { leadInput, normalizedPhone, parseInput } from "./cms.validation";
 import { privacyDocuments } from "./privacy-documents";
 import { RateLimitExceededException } from "../../common/exceptions/rate-limit-exceeded.exception";
+import { telegramLeadMessage } from "./telegram-lead-message";
 
 @Injectable()
 export class LeadsService implements OnModuleInit, OnModuleDestroy {
@@ -160,7 +161,7 @@ export class LeadsService implements OnModuleInit, OnModuleDestroy {
             headers: { "content-type": "application/json" },
             body: JSON.stringify({
               chat_id: process.env.TELEGRAM_LEADS_CHAT_ID,
-              text: `Новая заявка ${lead.id}\nОткройте раздел «Заявки» в административной панели сайта.`,
+              ...telegramLeadMessage(lead, process.env.FRONTEND_ORIGIN!),
             }),
             signal: AbortSignal.timeout(8000),
             redirect: "error",

@@ -3,6 +3,7 @@ import { jest } from "@jest/globals";
 import { AddressInfo } from "node:net";
 import { DataSource } from "typeorm";
 import { LeadsService } from "./leads.service";
+import type { Lead } from "./cms.entities";
 
 describe("Telegram proxy delivery", () => {
   it.each([200, 503])(
@@ -39,9 +40,16 @@ describe("Telegram proxy delivery", () => {
             1,
           ]),
         getRepository: () => ({
-          findOneBy: jest
-            .fn<() => Promise<{ id: string }>>()
-            .mockResolvedValue({ id: "lead" }),
+          findOneBy: jest.fn<() => Promise<Partial<Lead>>>().mockResolvedValue({
+            id: "lead",
+            name: "Fixture name",
+            phone: "+79001234567",
+            message: "Fixture comment",
+            source: "/contacts",
+            sourceUrl: "/contacts",
+            status: "new",
+            createdAt: new Date("2026-10-14T12:00:00Z"),
+          }),
           update,
         }),
       } as unknown as DataSource;
@@ -51,6 +59,7 @@ describe("Telegram proxy delivery", () => {
         process.env.TELEGRAM_LEADS_CHAT_ID = "fixture-chat";
         process.env.TELEGRAM_API_BASE_URL = "http://telegram.invalid";
         process.env.TELEGRAM_PROXY_URL = `http://user:pass@127.0.0.1:${port}`;
+        process.env.FRONTEND_ORIGIN = "https://site.example.test";
         await service.deliver();
         expect(destination).toBe("telegram.invalid:80");
         expect(authorization).toBe(

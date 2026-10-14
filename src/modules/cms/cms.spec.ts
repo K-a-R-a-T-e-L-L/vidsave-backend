@@ -157,6 +157,9 @@ describe("outbox delivery and leases", () => {
       phone: "+79005550123",
       message: "Fixture",
       sourceUrl: "/contacts",
+      source: "/contacts",
+      status: "new",
+      createdAt: new Date("2026-10-14T12:00:00Z"),
     };
     const db = {
       query,
@@ -172,13 +175,28 @@ describe("outbox delivery and leases", () => {
             : {},
     } as unknown as DataSource;
     const service = new LeadsService(db);
+    jest.replaceProperty(process, "env", {
+      ...process.env,
+      FRONTEND_ORIGIN: "https://site.example.test",
+    });
     jest.spyOn(service, "configured").mockReturnValue(true);
-    jest
+    const send = jest
       .spyOn(global, "fetch")
       .mockResolvedValue(
         new Response(JSON.stringify({ ok: true }), { status: 200 }),
       );
     await service.deliver();
+    const message = JSON.parse(String(send.mock.calls[0][1]?.body)) as {
+      text: string;
+      parse_mode: string;
+      reply_markup: { inline_keyboard: { url: string }[][] };
+    };
+    expect(message.text).toContain(lead.phone);
+    expect(message.text).toContain(lead.message);
+    expect(message.parse_mode).toBe("HTML");
+    expect(message.reply_markup.inline_keyboard[0][0].url).toBe(
+      `https://site.example.test/admin/leads/${lead.id}`,
+    );
     expect(query.mock.calls[1][0]).toContain("FOR UPDATE SKIP LOCKED");
     expect(update.mock.calls[0][0]).toEqual(
       expect.objectContaining({

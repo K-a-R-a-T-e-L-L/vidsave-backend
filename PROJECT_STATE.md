@@ -34,7 +34,7 @@
 - PublicPage appends one shared FeedbackSection at the end of every standard public page (including legal documents); home ends with the same component after Contacts. Blog cards share ContentCard, public/admin list prices omit kopecks without changing stored values, menu CTA targets #request. Blog preview includes cover and rich body.
 - Three original introductory blog guides are seeded transactionally only when installing contact settings for the first time; deletions survive restart. Actual projects/reviews are never fabricated. Public content is SSR/no-store with parallel independent reads; legal body is excluded from client context, admin-only styles/notifications stay out of public layout.
 - Verified 2GIS company widget loads through IntersectionObserver within 700 px of viewport, without clicking. CSS adapts the map to dark/light; permanent route link remains available.
-- Optional Telegram credentials enable leased retry/backoff delivery. Missing credentials keep leads stored with disabled notification state. At-least-once delivery can repeat after a provider-success/process-crash window. Notifications contain only the lead ID. Real Telegram delivery requires owner credentials; lead storage works without them.
+- Optional Telegram credentials enable leased retry/backoff delivery. Missing credentials keep leads stored with disabled notification state. At-least-once delivery can repeat after a provider-success/process-crash window. Notifications include the name, phone, comment, configured site, source page, creation time (UTC), status, lead ID and an administrator detail button; user text is HTML-escaped. Real Telegram delivery requires owner credentials; lead storage works without them.
 
 - Owner media pack installed: public/images/media-pack, 12 source images optimized to 18 WebP/AVIF files (30,570,794 → 2,832,363 bytes including hero variants). Theme-specific hero backgrounds use mobile960 and desktop source-sized images, section illustrations use responsive Next Image; route mapping in src/app/lib/page-media.ts. Browser verified all eight routes and theme switching.
 
@@ -59,5 +59,5 @@
 ## Codebase Memory
 
 - Updated 2026-10-14 for the final source state; `persistence=false`, no auto_index/auto_watch, no repository graph artifacts.
-- Backend project `D-Desktop-dev-web-orders-vidsave-vidsave-backend`: 1396 nodes / 2853 edges; refreshed 2026-10-14 after the administrator password policy update, persistence=false.
+- Backend project `D-Desktop-dev-web-orders-vidsave-vidsave-backend`: 1404 nodes / 2871 edges; refreshed 2026-10-14 after adding detailed Telegram lead notifications, persistence=false.
 - Frontend project `D-Desktop-dev-web-orders-vidsave-vidsave-frontend`: 1097 nodes / 2197 edges; refreshed 2026-10-14 after the administrator password policy update, persistence=false.
