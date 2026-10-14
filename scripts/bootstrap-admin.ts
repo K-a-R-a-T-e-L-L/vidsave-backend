@@ -115,7 +115,7 @@ async function main(): Promise<void> {
     }
     if (!isPasswordWithinPolicy(password)) {
       throw new BootstrapDiagnosticError(
-        "BOOTSTRAP_ADMIN_PASSWORD must contain at least 14 characters and no more than 72 UTF-8 bytes.",
+        "BOOTSTRAP_ADMIN_PASSWORD must contain at least 8 characters and no more than 72 UTF-8 bytes.",
       );
     }
 

@@ -34,9 +34,9 @@ export class CreateAdminDto {
   @MaxLength(320)
   email!: string;
 
-  @ApiProperty({ minLength: 14, maxLength: 72, writeOnly: true })
+  @ApiProperty({ minLength: 8, maxLength: 72, writeOnly: true })
   @IsString()
-  @MinLength(14)
+  @MinLength(8)
   password!: string;
 }
 

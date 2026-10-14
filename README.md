@@ -11,12 +11,12 @@ npm ci
 npm run build
 $env:BOOTSTRAP_ADMIN_CONFIRM = 'CREATE_FIRST_ADMIN'
 $env:BOOTSTRAP_ADMIN_EMAIL = 'your-admin@example.com'
-$env:BOOTSTRAP_ADMIN_PASSWORD = 'your-private-password-at-least-14-characters'
+$env:BOOTSTRAP_ADMIN_PASSWORD = 'your-private-password-at-least-8-characters'
 npm run admin:bootstrap
 npm run dev
 ```
 
-Bootstrap builds fresh output and creates only the first ADMIN. Password policy is at least 14 characters and at most 72 UTF-8 bytes. No public registration is provided. Do not store real bootstrap credentials in scripts, reports or Git.
+Bootstrap builds fresh output and creates only the first ADMIN. Password policy is at least 8 characters and at most 72 UTF-8 bytes. No public registration is provided. Do not store real bootstrap credentials in scripts, reports or Git.
 
 Runtime schema management remains `synchronize: true`, `dropSchema: false`. No migrations are used. Run development schema checks against an explicitly disposable database. The legacy importer preserves existing administrator edits: `npm run catalog:import -- --dry-run` or `--apply`; it does not synchronize schema.
 

@@ -3,7 +3,7 @@ import * as bcrypt from "bcryptjs";
 
 export const BCRYPT_COST = 12;
 export const MAX_PASSWORD_BYTES = 72;
-export const MIN_PASSWORD_LENGTH = 14;
+export const MIN_PASSWORD_LENGTH = 8;
 
 export function isPasswordWithinPolicy(password: string): boolean {
   return (
