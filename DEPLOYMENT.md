@@ -13,7 +13,7 @@ Backend: локальная main, удалённый репозиторий пу
 
 ## CI/CD
 
-Оба workflow запускают проверки для PR и push main/master; ручной запуск также доступен. Публикация и деплой разрешены только из default branch репозитория после успешного checks и при repository variable DEPLOY_ENABLED=true. Пока переменная не включена, выполняется только CI.
+Оба workflow запускают проверки для PR и push main/master; ручной запуск также доступен. Backend публикует образ и запускает деплой автоматически из default branch после успешного checks, без DEPLOY_ENABLED. Frontend пока требует repository variable DEPLOY_ENABLED=true. PR не запускает публикацию и деплой.
 
 Проверки: Node22/npm ci, lint, format, build, typecheck, тесты, Docker build без публикации. Frontend: Chromium через xvfb, SSR и браузерный сценарий с fixture API. Backend: unit и integration с отдельной PostgreSQL16 service на порту5433. Продакшен credentials в CI не используются.
 
@@ -26,14 +26,14 @@ CD: образ latest и отдельный тег полного commit SHA в 
 3. Назначить указанные домены и HTTPS соответствующим container ports. API hostname именно api.vidsave.karatell.ru, независимо от ошибочной ссылки в исходном сообщении. DNS и сертификаты пока не изменялись. Контейнер frontend держать в одном экземпляре, как требует текущая auth refresh архитектура.
 4. Внести runtime variables из .env.production.example каждой части. Реальные DATABASE_PASSWORD/JWT_SECRET/S3 keys хранить в Dokploy, не в образе/build args. Сначала настроить PostgreSQL/backend, затем frontend. BACKEND_INTERNAL_URL — origin без /api; можно заменить на приватный DNS сервиса Dokploy.
 5. До S3 подключить постоянный volume к /app/var/media backend (UID1000). PostgreSQL также требует постоянного volume. Автоматическая synchronize:true сохранена по требованию владельца; миграций нет. Перед релизом с изменением схемы делать резервную копию БД.
-6. После отдельно разрешённого push и готовности окружения установить repository variable DEPLOY_ENABLED=true и выполнить workflow из default branch. Документ не является разрешением запускать деплой сейчас.
+6. Backend: push в default branch или ручной запуск workflow автоматически запускает публикацию и деплой после checks. Frontend: пока требуется repository variable DEPLOY_ENABLED=true.
 
 Команды для настройки секрета после gh auth login (значение вводится интерактивно, не помещать URL в командную строку):
 
     gh secret set DOKPLOY_DEPLOY_WEBHOOK --env production --repo K-a-R-a-T-e-L-L/vidsave-backend
     gh secret set DOKPLOY_DEPLOY_WEBHOOK --env production --repo K-a-R-a-T-e-L-L/vidsave-frontend
 
-Включение DEPLOY_ENABLED выполнять только когда готов деплой. Для отката выбрать предыдущий SHA-tag в Dokploy; latest сам по себе не является резервной копией. Перед возвращением автоматического режима снова выбрать latest.
+Для backend DEPLOY_ENABLED не требуется; frontend пока сохраняет это условие. Для отката выбрать предыдущий SHA-tag в Dokploy; latest сам по себе не является резервной копией. Перед возвращением автоматического режима снова выбрать latest.
 
 ## FirstVDS S3
 
