@@ -4,7 +4,7 @@
 
 - «ВИДЕОХРАНИТЕЛЬ» / VidSave consists of two related repositories.
 - Backend: `D:\Desktop\dev\web\orders\vidsave\vidsave-backend`, Git main; origin https://github.com/K-a-R-a-T-e-L-L/vidsave-backend.git. Initial application commit and push to origin/main authorized on 2026-10-14.
-- Frontend: `D:\Desktop\dev\web\orders\vidsave\vidsave-frontend`, branch `main`, origin https://github.com/K-a-R-a-T-e-L-L/kciasso-frontend.git. Prepared application changes are included in the authorized release commit; prior local history is retained.
+- Frontend: `D:\Desktop\dev\web\orders\vidsave\vidsave-frontend`, branch `main`, origin https://github.com/K-a-R-a-T-e-L-L/vidsave-frontend.git. Prepared application changes are included in the authorized release commit; prior local history is retained.
 - Canonical report: `D:\Desktop\dev\web\orders\vidsave\.codex\отчёт.txt`. Frontend state is a short pointer only.
 
 ## Stack and architecture
@@ -47,7 +47,7 @@
 
 ## Confirmed constraints and next work
 
-- Owner authorized commits and pushes of both repositories to main on 2026-10-14. Frontend origin is kciasso-frontend; legacy-origin remains preserved. Remote master contains a different project and is preserved independently; main publishes VidSave with its existing local history. No force push, branch deletion, production configuration or DNS changes are authorized by this operation. Deployment workflows retain their DEPLOY_ENABLED/default-branch gate.
+- Both repositories publish VidSave to origin/main. Frontend origin was corrected to https://github.com/K-a-R-a-T-e-L-L/vidsave-frontend.git on 2026-10-14 at the explicit request of the owner; legacy-origin remains preserved. The mistaken main branch in the unrelated repository was removed after transferring both commits; original master was preserved. Deployment workflows retain their DEPLOY_ENABLED/default-branch gate. Production configuration and DNS were not changed.
 - Runtime checks use disposable PostgreSQL ports, never workstation port 5432. No schema checks or test writes were applied to the user database. synchronize: true / dropSchema: false remains unchanged; migrations are excluded.
 - Existing production audits had zero findings; development dependency findings remain tracked in the report. No dependency versions changed in this task.
 - Node 22 is the supported runtime. Workstation Node 24 remains untouched; final build and runtime checks use an isolated Node 22 executable. S3 SDK and Sharp are installed/resolvable.

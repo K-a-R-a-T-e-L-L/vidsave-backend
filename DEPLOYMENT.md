@@ -7,7 +7,7 @@
 | Часть    | GitHub                           | Образ                                           | Домен / порт контейнера        |
 | -------- | -------------------------------- | ----------------------------------------------- | ------------------------------ |
 | Backend  | K-a-R-a-T-e-L-L/vidsave-backend  | ghcr.io/k-a-r-a-t-e-l-l/vidsave-backend:latest  | api.vidsave.karatell.ru / 3001 |
-| Frontend | K-a-R-a-T-e-L-L/kciasso-frontend | ghcr.io/k-a-r-a-t-e-l-l/kciasso-frontend:latest | vidsave.karatell.ru / 3000     |
+| Frontend | K-a-R-a-T-e-L-L/vidsave-frontend | ghcr.io/k-a-r-a-t-e-l-l/vidsave-frontend:latest | vidsave.karatell.ru / 3000     |
 
 Backend: локальная main, удалённый репозиторий пуст на момент проверки. Frontend: локальная main имеет другую историю, чем существующая удалённая master. Истории не объединялись. Старый remote сохранён как legacy-origin, pushDefault указывает на новый origin. Перед будущим первым push нужно отдельно согласовать перенос истории/default branch; force push не нужен и не выполнялся.
 
@@ -31,7 +31,7 @@ CD: образ latest и отдельный тег полного commit SHA в 
 Команды для настройки секрета после gh auth login (значение вводится интерактивно, не помещать URL в командную строку):
 
     gh secret set DOKPLOY_DEPLOY_WEBHOOK --env production --repo K-a-R-a-T-e-L-L/vidsave-backend
-    gh secret set DOKPLOY_DEPLOY_WEBHOOK --env production --repo K-a-R-a-T-e-L-L/kciasso-frontend
+    gh secret set DOKPLOY_DEPLOY_WEBHOOK --env production --repo K-a-R-a-T-e-L-L/vidsave-frontend
 
 Включение DEPLOY_ENABLED выполнять только когда готов деплой. Для отката выбрать предыдущий SHA-tag в Dokploy; latest сам по себе не является резервной копией. Перед возвращением автоматического режима снова выбрать latest.
 
