@@ -275,6 +275,7 @@ describe("backend HTTP foundation", () => {
     const response = await request(app.getHttpServer() as Server)
       .get("/api/health/live")
       .expect(200);
+    expect(response.headers["x-robots-tag"]).toBe("noindex");
     expect(response.headers["x-content-type-options"]).toBe("nosniff");
     expect(response.headers["x-frame-options"]).toBeDefined();
   });

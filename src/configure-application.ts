@@ -21,6 +21,7 @@ export function configureApplication(
 ): void {
   const docsPath = `/${environment.API_PREFIX}/docs`;
   app.use((request: Request, response: Response, next: NextFunction) => {
+    response.setHeader("X-Robots-Tag", "noindex");
     const docsRequest =
       environment.NODE_ENV !== "production" &&
       environment.SWAGGER_ENABLED &&
