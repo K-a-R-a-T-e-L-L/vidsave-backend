@@ -17,6 +17,7 @@ import {
 import {
   ApiBearerAuth,
   ApiTags,
+  ApiQuery,
   ApiBody,
   ApiProduces,
   ApiResponse,
@@ -63,6 +64,7 @@ const queryInput = z
       .string()
       .regex(/^[1-9][0-9]{0,2}$/)
       .optional(),
+    placement: z.enum(["home", "feed"]).optional(),
     search: z.string().max(200).optional(),
     status: z.string().max(30).optional(),
     category: z.string().max(200).optional(),
@@ -216,10 +218,16 @@ export class CmsPublicController {
       })
       .send(Buffer.from(bytes));
   }
-  @Get(":kind") @Header("Cache-Control", "no-store") list(
-    @Param("kind") kind: string,
-    @Query() query: Record<string, string>,
-  ) {
+  @ApiQuery({
+    name: "placement",
+    required: false,
+    enum: ["home", "feed"],
+    description:
+      "Homepage editorial placement or newest publications first for feeds",
+  })
+  @Get(":kind")
+  @Header("Cache-Control", "no-store")
+  list(@Param("kind") kind: string, @Query() query: Record<string, string>) {
     query = parseInput(queryInput, query);
     if (!isContent(kind)) throw new NotFoundException();
     return this.cms.list(kind, query, true);

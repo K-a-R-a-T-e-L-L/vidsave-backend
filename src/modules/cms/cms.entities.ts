@@ -64,6 +64,8 @@ export class BlogCategory extends ContentRecord {
 
 @Entity("cms_blog_posts")
 export class BlogPost extends ContentRecord {
+  @Column({ type: "integer", default: 1000 }) sortOrder!: number;
+  @Column({ type: "integer", nullable: true }) homeOrder!: number | null;
   @Column({ type: "jsonb", default: () => '\'{"type":"doc","content":[]}\'' })
   body!: RichNode;
   @ManyToMany(() => BlogCategory)
@@ -73,6 +75,8 @@ export class BlogPost extends ContentRecord {
 
 @Entity("cms_portfolio_projects")
 export class PortfolioProject extends ContentRecord {
+  @Column({ type: "integer", default: 1000 }) sortOrder!: number;
+  @Column({ type: "integer", nullable: true }) homeOrder!: number | null;
   @Column({ type: "text", default: "" }) objectType!: string;
   @Column({ type: "text", default: "" }) task!: string;
   @Column({ type: "text", default: "" }) solution!: string;

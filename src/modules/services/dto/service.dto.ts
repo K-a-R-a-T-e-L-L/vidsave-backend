@@ -67,6 +67,18 @@ export class CreateServiceDto {
   @Min(0)
   sortOrder?: number;
 
+  @ApiPropertyOptional({
+    type: Number,
+    nullable: true,
+    minimum: 1,
+    maximum: 100000,
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100000)
+  homeOrder?: number | null;
+
   @ApiPropertyOptional({ maxLength: 500, nullable: true })
   @IsOptional()
   @IsString()
@@ -168,6 +180,10 @@ export class ServicePublicDto {
   unitLabel!: string | null;
   @ApiProperty()
   sortOrder!: number;
+  @ApiProperty({ type: Number, nullable: true })
+  homeOrder!: number | null;
+  @ApiProperty({ type: String, format: "date-time" })
+  updatedAt!: Date;
   @ApiProperty({ nullable: true })
   imagePath!: string | null;
   @ApiProperty({ nullable: true })
@@ -182,8 +198,6 @@ export class ServiceAdminDto extends ServicePublicDto {
   status!: ServiceStatus;
   @ApiProperty()
   createdAt!: Date;
-  @ApiProperty()
-  updatedAt!: Date;
 }
 
 export class PublicServicesListDto {

@@ -76,6 +76,9 @@ export class Service {
   @Column({ type: "integer", default: 0 })
   sortOrder!: number;
 
+  @Column({ type: "integer", nullable: true })
+  homeOrder!: number | null;
+
   @Column({ type: "varchar", length: 500, nullable: true })
   legacyImagePath!: string | null;
 

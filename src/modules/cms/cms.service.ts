@@ -146,6 +146,8 @@ export class CmsService implements OnModuleInit {
           "coverId",
           "ogImageId",
           "publishedAt",
+          "sortOrder",
+          "homeOrder",
           "createdAt",
           "updatedAt",
         ].map((field) => "record." + field),
@@ -188,11 +190,18 @@ export class CmsService implements OnModuleInit {
         });
       else qb.andWhere("1 = 0");
     }
+    if (kind !== "blog-categories" && query.placement === "home") {
+      qb.orderBy("record.homeOrder", "ASC", "NULLS LAST").addOrderBy(
+        "record.sortOrder",
+        "ASC",
+      );
+    } else if (kind === "posts" && query.placement === "feed") {
+      qb.orderBy("record.publishedAt", "DESC", "NULLS LAST");
+    } else {
+      qb.orderBy("record.sortOrder", "ASC");
+    }
+    if (kind !== "blog-categories") qb.addOrderBy("record.createdAt", "DESC");
     const [items, total] = await qb
-      .orderBy(
-        kind === "blog-categories" ? "record.sortOrder" : "record.createdAt",
-        kind === "blog-categories" ? "ASC" : "DESC",
-      )
       .addOrderBy("record.id", "ASC")
       .skip((page - 1) * limit)
       .take(limit)

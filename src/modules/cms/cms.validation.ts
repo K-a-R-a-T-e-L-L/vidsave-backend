@@ -44,9 +44,14 @@ export const categoryInput = z
     sortOrder: z.number().int().min(0).max(100000).default(0),
   })
   .strict();
+const placement = {
+  sortOrder: z.number().int().min(0).max(100000).optional(),
+  homeOrder: z.number().int().min(1).max(100000).nullable().optional(),
+};
 export const postInput = z
   .object({
     ...base,
+    ...placement,
     body: z.unknown(),
     categoryIds: z.array(uuid).max(30).default([]),
   })
@@ -54,6 +59,7 @@ export const postInput = z
 export const projectInput = z
   .object({
     ...base,
+    ...placement,
     objectType: text(500).default(""),
     task: text().default(""),
     solution: text().default(""),

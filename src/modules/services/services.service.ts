@@ -134,6 +134,7 @@ export class ServicesService {
       priceMode: input.priceMode,
       unitLabel: input.unitLabel ?? null,
       sortOrder: input.sortOrder ?? 0,
+      homeOrder: input.homeOrder ?? null,
       legacyImagePath: input.legacyImagePath ?? null,
       mediaId: input.mediaId ?? null,
       slugLocked: input.status === ServiceStatus.PUBLISHED,
@@ -189,6 +190,7 @@ export class ServicesService {
     if (input.priceRub !== undefined) service.priceRub = input.priceRub;
     if (input.priceMode !== undefined) service.priceMode = input.priceMode;
     if (input.unitLabel !== undefined) service.unitLabel = input.unitLabel;
+    if (input.homeOrder !== undefined) service.homeOrder = input.homeOrder;
     if (input.sortOrder !== undefined) service.sortOrder = input.sortOrder;
     if (input.legacyImagePath !== undefined)
       service.legacyImagePath = input.legacyImagePath;
@@ -234,6 +236,8 @@ export function toPublicService(value: Service) {
     priceMode: value.priceMode,
     unitLabel: value.unitLabel,
     sortOrder: value.sortOrder,
+    homeOrder: value.homeOrder,
+    updatedAt: value.updatedAt,
     imagePath: value.mediaId
       ? `/media/${value.mediaId}`
       : value.legacyImagePath,

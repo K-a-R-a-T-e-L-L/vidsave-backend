@@ -122,6 +122,77 @@ catalogDescribe("PostgreSQL-backed service catalog", () => {
       .accessToken;
   });
 
+  it.each(["posts", "projects"])(
+    "keeps %s homepage placement independent of listing order",
+    async (kind) => {
+      const server = app.getHttpServer() as Server;
+      const url = "/api/admin/cms/" + kind;
+      const prefix = "order-" + randomBytes(4).toString("hex");
+      const item = (
+        suffix: string,
+        sortOrder: number,
+        homeOrder: number | null,
+        status = "published",
+      ) => ({
+        title: prefix + suffix,
+        slug: prefix + suffix,
+        excerpt: "Order test",
+        status,
+        sortOrder,
+        homeOrder,
+        ...(kind === "posts"
+          ? {
+              body: {
+                type: "doc",
+                content: [
+                  {
+                    type: "paragraph",
+                    content: [{ type: "text", text: "Order test" }],
+                  },
+                ],
+              },
+            }
+          : { task: "Task", solution: "Solution", result: "Result" }),
+      });
+      const pinned = item("-pin", 50, 1);
+      const created = await request(server)
+        .post(url)
+        .set(bearer(adminToken))
+        .send(pinned)
+        .expect(201);
+      await request(server)
+        .post(url)
+        .set(bearer(adminToken))
+        .send(item("-first", 0, null))
+        .expect(201);
+      await request(server)
+        .post(url)
+        .set(bearer(adminToken))
+        .send(item("-draft", 0, 1, "draft"))
+        .expect(201);
+      const list = async (home: boolean) => {
+        const res = await request(server)
+          .get("/api/content/" + kind)
+          .query({ search: prefix, ...(home ? { placement: "home" } : {}) })
+          .expect(200);
+        return (res.body.items as { slug: string }[]).map((i) => i.slug);
+      };
+      expect(await list(false)).toEqual([prefix + "-first", pinned.slug]);
+      expect(await list(true)).toEqual([pinned.slug, prefix + "-first"]);
+      await request(server)
+        .patch(url + "/" + created.body.id)
+        .set(bearer(adminToken))
+        .send({ ...pinned, homeOrder: null })
+        .expect(200);
+      expect(await list(true)).toEqual(await list(false));
+      const spec = await request(server).get("/api/docs-json").expect(200);
+      expect(
+        spec.body.components.schemas.CreateServiceDto.properties.homeOrder
+          .nullable,
+      ).toBe(true);
+    },
+  );
+
   it("enforces anonymous and role ACL, CRUD, publication filters, no-store, and protected fields", async () => {
     const server = app.getHttpServer() as Server;
     await request(server)
@@ -200,6 +271,7 @@ catalogDescribe("PostgreSQL-backed service catalog", () => {
       slug: body.slug,
       description: body.description,
       categoryId: body.categoryId,
+      homeOrder: 2,
       priceRub: body.priceRub,
       priceMode: body.priceMode,
       unitLabel: body.unitLabel,
@@ -212,6 +284,19 @@ catalogDescribe("PostgreSQL-backed service catalog", () => {
       .expect(201);
     expect(created.body.priceRub).toBe("1250.50");
     expect(created.body.legacyId).toBeNull();
+    expect(created.body.homeOrder).toBe(2);
+    await request(server)
+      .patch(`/api/admin/services/${created.body.id}`)
+      .set(bearer(adminToken))
+      .send({ homeOrder: null })
+      .expect(200);
+    expect(
+      (
+        await request(server)
+          .get(`/api/catalog/services/${body.slug}`)
+          .expect(200)
+      ).body.homeOrder,
+    ).toBeNull();
     expect(created.body.legacyChecksum).toBeUndefined();
     await request(server)
       .post("/api/admin/services")
