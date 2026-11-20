@@ -4,7 +4,7 @@ const valid = {
   NODE_ENV: "test",
   PORT: "3001",
   API_PREFIX: "api",
-  FRONTEND_ORIGIN: "https://vidsave.karatell.ru",
+  FRONTEND_ORIGIN: "https://regsave.ru",
   DATABASE_HOST: "localhost",
   DATABASE_PORT: "5432",
   DATABASE_USER: "test",

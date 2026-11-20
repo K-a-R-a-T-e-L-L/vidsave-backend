@@ -4,10 +4,10 @@
 
 ## Репозитории и ветки
 
-| Часть    | GitHub                           | Образ                                           | Домен / порт контейнера        |
-| -------- | -------------------------------- | ----------------------------------------------- | ------------------------------ |
-| Backend  | K-a-R-a-T-e-L-L/vidsave-backend  | ghcr.io/k-a-r-a-t-e-l-l/vidsave-backend:latest  | api.vidsave.karatell.ru / 3000 |
-| Frontend | K-a-R-a-T-e-L-L/vidsave-frontend | ghcr.io/k-a-r-a-t-e-l-l/vidsave-frontend:latest | vidsave.karatell.ru / 3000     |
+| Часть    | GitHub                           | Образ                                           | Домен / порт контейнера |
+| -------- | -------------------------------- | ----------------------------------------------- | ----------------------- |
+| Backend  | K-a-R-a-T-e-L-L/vidsave-backend  | ghcr.io/k-a-r-a-t-e-l-l/vidsave-backend:latest  | api.regsave.ru / 3000   |
+| Frontend | K-a-R-a-T-e-L-L/vidsave-frontend | ghcr.io/k-a-r-a-t-e-l-l/vidsave-frontend:latest | regsave.ru / 3000       |
 
 Backend: локальная main, удалённый репозиторий пуст на момент проверки. Frontend: локальная main имеет другую историю, чем существующая удалённая master. Истории не объединялись. Старый remote сохранён как legacy-origin, pushDefault указывает на новый origin. Перед будущим первым push нужно отдельно согласовать перенос истории/default branch; force push не нужен и не выполнялся.
 
@@ -23,7 +23,7 @@ CD: образ latest и отдельный тег полного commit SHA в 
 
 1. Вебхуки frontend/backend заданы в .github/scripts/deploy.mjs соответствующего репозитория по прямому запросу владельца. GitHub Secret DOKPLOY_DEPLOY_WEBHOOK не требуется. URL видны в публичном коде; Environment production сохраняется для истории деплоев.
 2. В Dokploy выбрать Docker image provider с соответствующим образом :latest, Auto Deploy включить (этого требует webhook). Прямой GitHub push webhook дополнительно не подключать: деплой вызывается только после CI. Для private GHCR настроить registry credentials с read:packages. Сборка в Dokploy не требуется.
-3. Назначить указанные домены и HTTPS соответствующим container ports. API hostname именно api.vidsave.karatell.ru, независимо от ошибочной ссылки в исходном сообщении. DNS и сертификаты пока не изменялись. Контейнер frontend держать в одном экземпляре, как требует текущая auth refresh архитектура.
+3. Назначить указанные домены и HTTPS соответствующим container ports. После проверки HTTPS на новом сайте сохранить HTTPS на vidsave.karatell.ru и настроить на прокси постоянный редирект 301 или 308 на https://regsave.ru с сохранением пути и query-параметров. Контейнер frontend держать в одном экземпляре, как требует текущая auth refresh архитектура.
 4. Внести runtime variables из .env.production.example каждой части. Реальные DATABASE_PASSWORD/JWT_SECRET/S3 keys хранить в Dokploy, не в образе/build args. Сначала настроить PostgreSQL/backend, затем frontend. BACKEND_INTERNAL_URL — origin без /api; можно заменить на приватный DNS сервиса Dokploy.
 5. До S3 подключить постоянный volume к /app/var/media backend (UID1000). PostgreSQL также требует постоянного volume. Автоматическая synchronize:true сохранена по требованию владельца; миграций нет. Перед релизом с изменением схемы делать резервную копию БД.
 6. В обоих репозиториях push в default branch или ручной запуск workflow автоматически запускает публикацию и деплой после checks.
