@@ -536,6 +536,7 @@ export class CmsService implements OnModuleInit {
       settings: {
         ...defaultSettings,
         ...contacts,
+        additionalEmail: contacts.email,
         ...privacyDocuments(saved),
       },
     };

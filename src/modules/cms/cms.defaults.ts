@@ -5,7 +5,7 @@ export const defaultSettings = {
   phone: "8-904-574-52-07",
   additionalPhone: "8-995-065-67-77",
   email: "mail@khranitelvideo.ru",
-  additionalEmail: "denis.zaichuk@yandex.ru",
+  additionalEmail: "mail@khranitelvideo.ru",
   address: "Россия, г. Кемерово, ул. Шестакова, д. 6А",
   legalName: "ИП Зайчук Денис Евгеньевич",
   legalAddress:
