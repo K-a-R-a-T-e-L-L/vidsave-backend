@@ -2,7 +2,7 @@ import { BadRequestException } from "@nestjs/common";
 import { z } from "zod";
 import type { RichNode } from "./cms.entities";
 
-export const PUBLIC_ORIGIN = "https://regsave.ru";
+export const PUBLIC_ORIGIN = "https://recsave.ru";
 const text = (max = 10000) => z.string().max(max);
 export const uuid = z.string().uuid();
 const nullableId = uuid.nullable().optional();

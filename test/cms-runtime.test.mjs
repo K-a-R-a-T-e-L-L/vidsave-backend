@@ -421,7 +421,7 @@ test("published pagination and category counts use real rows and stable non-over
     ).text();
     assert.ok(
       html.includes(
-        'href="https://regsave.ru/blog/category/' +
+        'href="https://recsave.ru/blog/category/' +
           category.slug +
           '?page=2"',
       ),
