@@ -63,6 +63,9 @@ export class Service {
   @Column({ type: "numeric", precision: 12, scale: 2, nullable: true })
   priceRub!: string | null;
 
+  @Column({ type: "jsonb", default: () => "'[]'::jsonb" })
+  tariffs!: { label: string; priceRub: string }[];
+
   @Column({
     type: "enum",
     enum: ServicePriceMode,

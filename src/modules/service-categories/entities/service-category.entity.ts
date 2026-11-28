@@ -31,6 +31,9 @@ export class ServiceCategory {
   @Column({ type: "varchar", length: 160 })
   slug!: string;
 
+  @Column({ type: "varchar", length: 20, nullable: true })
+  direction!: string | null;
+
   @Column({ type: "text", nullable: true })
   description!: string | null;
 

@@ -130,6 +130,7 @@ export class ServicesService {
       description: input.description,
       details: input.details ?? null,
       category,
+      tariffs: input.tariffs ?? [],
       priceRub: input.priceRub ?? null,
       priceMode: input.priceMode,
       unitLabel: input.unitLabel ?? null,
@@ -187,6 +188,7 @@ export class ServicesService {
     if (input.description !== undefined)
       service.description = input.description;
     if (input.details !== undefined) service.details = input.details;
+    if (input.tariffs !== undefined) service.tariffs = input.tariffs ?? [];
     if (input.priceRub !== undefined) service.priceRub = input.priceRub;
     if (input.priceMode !== undefined) service.priceMode = input.priceMode;
     if (input.unitLabel !== undefined) service.unitLabel = input.unitLabel;
@@ -207,6 +209,14 @@ export class ServicesService {
   }
 
   private async save(service: Service): Promise<Service> {
+    if (service.tariffs?.length) {
+      const prices = service.tariffs.map((tariff) => Number(tariff.priceRub));
+      service.priceRub = Math.min(...prices).toFixed(2);
+      service.priceMode =
+        new Set(prices).size === 1
+          ? ServicePriceMode.FIXED
+          : ServicePriceMode.FROM;
+    }
     try {
       return await this.services.save(service);
     } catch (error) {
@@ -231,7 +241,9 @@ export function toPublicService(value: Service) {
       id: value.category.id,
       name: value.category.name,
       slug: value.category.slug,
+      direction: value.category.direction ?? null,
     },
+    tariffs: value.tariffs ?? [],
     priceRub: value.priceRub,
     priceMode: value.priceMode,
     unitLabel: value.unitLabel,

@@ -102,6 +102,7 @@ function toPublicCategory(value: ServiceCategory): ServiceCategoryPublicDto {
     legacyFeedId: value.legacyFeedId,
     name: value.name,
     slug: value.slug,
+    direction: value.direction,
     description: value.description,
     sortOrder: value.sortOrder,
   };

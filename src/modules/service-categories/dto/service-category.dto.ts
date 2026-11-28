@@ -3,6 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 import {
   IsEnum,
+  IsIn,
   IsInt,
   IsOptional,
   IsString,
@@ -14,6 +15,13 @@ import {
 import { ServiceCategoryStatus } from "../entities/service-category.entity";
 
 export class CreateServiceCategoryDto {
+  @ApiPropertyOptional({
+    enum: ["surveillance", "climate", "electrical", "none"],
+    nullable: true,
+  })
+  @IsOptional()
+  @IsIn(["surveillance", "climate", "electrical", "none"])
+  direction?: string | null;
   @ApiProperty({ maxLength: 255 })
   @IsString()
   @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
@@ -60,6 +68,8 @@ export class UpdateServiceCategoryDto extends PartialType(
 ) {}
 
 export class ServiceCategoryPublicDto {
+  @ApiProperty({ type: String, nullable: true })
+  direction!: string | null;
   @ApiProperty({ format: "uuid" })
   id!: string;
   @ApiProperty({ nullable: true, minimum: 1 })

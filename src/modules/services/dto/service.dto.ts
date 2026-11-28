@@ -2,6 +2,9 @@ import { PartialType } from "@nestjs/swagger";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
 import {
+  IsArray,
+  ArrayMaxSize,
+  ValidateNested,
   IsEnum,
   IsInt,
   MinLength,
@@ -18,7 +21,28 @@ import { ServicePriceMode, ServiceStatus } from "../entities/service.entity";
 const SERVICE_SLUG = /^[a-z0-9](?:[a-z0-9._()-]*[a-z0-9)])?$/;
 const DECIMAL_AMOUNT = /^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/;
 
+export class ServiceTariffDto {
+  @ApiProperty({ maxLength: 160 })
+  @IsString()
+  @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
+  @MinLength(1)
+  @MaxLength(160)
+  label!: string;
+
+  @ApiProperty({ type: String, pattern: DECIMAL_AMOUNT.source })
+  @IsString()
+  @Matches(DECIMAL_AMOUNT)
+  priceRub!: string;
+}
+
 export class CreateServiceDto {
+  @ApiPropertyOptional({ type: [ServiceTariffDto], maxItems: 40 })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(40)
+  @ValidateNested({ each: true })
+  @Type(() => ServiceTariffDto)
+  tariffs?: ServiceTariffDto[];
   @ApiProperty({ maxLength: 255 })
   @IsString()
   @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
@@ -147,6 +171,8 @@ export class AdminServiceQueryDto extends ServiceQueryDto {
 }
 
 export class ServicePublicDto {
+  @ApiProperty({ type: [ServiceTariffDto] })
+  tariffs!: ServiceTariffDto[];
   @ApiProperty({ format: "uuid" })
   id!: string;
   @ApiProperty({ nullable: true })
@@ -165,12 +191,14 @@ export class ServicePublicDto {
       id: { type: "string", format: "uuid" },
       name: { type: "string" },
       slug: { type: "string" },
+      direction: { type: "string", nullable: true },
     },
   })
   category!: {
     id: string;
     name: string;
     slug: string;
+    direction: string | null;
   };
   @ApiProperty({ type: String, nullable: true, example: "1250.00" })
   priceRub!: string | null;

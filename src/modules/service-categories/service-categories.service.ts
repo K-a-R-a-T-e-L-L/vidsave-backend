@@ -44,6 +44,7 @@ export class ServiceCategoriesService {
   async create(input: CreateServiceCategoryDto): Promise<ServiceCategory> {
     const category = this.categories.create({
       name: input.name,
+      direction: input.direction ?? null,
       slug: input.slug,
       description: input.description ?? null,
       sortOrder: input.sortOrder ?? 0,
@@ -60,6 +61,7 @@ export class ServiceCategoriesService {
     input: UpdateServiceCategoryDto,
   ): Promise<ServiceCategory> {
     const category = await this.getAdmin(id);
+    if (input.direction !== undefined) category.direction = input.direction;
     if (input.name !== undefined) category.name = input.name;
     if (input.slug !== undefined) category.slug = input.slug;
     if (input.description !== undefined)
